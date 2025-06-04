@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chuyển Văn Bản Thành Word</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #ff9ff3, #feca57, #48dbfb, #1dd1a1, #feca57, #ff9ff3);
+      background-size: 200% 200%;
+      animation: gradientFlow 12s ease infinite;
+      color: #2d3436;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+      color: #d63031;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(214, 48, 49, 0.2);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    textarea {
+      width: 100%;
+      height: 250px;
+      padding: 1rem;
+      font-size: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.75rem;
+      resize: vertical;
+      box-sizing: border-box;
+      margin-bottom: 1rem;
+      background: #f9fafb;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    textarea:focus {
+      border-color: #d63031;
+      box-shadow: 0 0 0 3px rgba(214, 48, 49, 0.1);
+      outline: none;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.75rem;
+      margin-bottom: 1.5rem;
+      box-sizing: border-box;
+      background: #f9fafb;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #d63031;
+      box-shadow: 0 0 0 3px rgba(214, 48, 49, 0.1);
+      outline: none;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      background: linear-gradient(to right, #ff7675, #d63031);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-width: 160px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(214, 48, 49, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px rgba(214, 48, 49, 0.2);
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 1.5rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      button {
+        min-width: 140px;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✨ Chuyển Văn Bản Thành File Word ✨</h2>
+
+    <textarea id="textInput" placeholder="Nhập văn bản tại đây..."></textarea>
+    <input type="text" id="filenameInput" placeholder="Nhập tên file Word (không cần .docx)" />
+
+    <div class="buttons">
+      <button onclick="generateWord()">📝 Chuyển thành Word</button>
+      <button onclick="window.location.href='index.html'">⬅️ Quay về trang chính</button>
+      <button onclick="window.location.href='chuyendoi.html'">🔧 Chuẩn hóa câu hỏi</button>
+    </div>
+  </div>
+
+  <script>
+    function generateWord() {
+      const rawText = document.getElementById("textInput").value.trim();
+      const filename = document.getElementById("filenameInput").value.trim();
+
+      if (!rawText) {
+        alert("Vui lòng nhập nội dung văn bản.");
+        return;
+      }
+      if (!filename) {
+        alert("Vui lòng nhập tên file Word.");
+        return;
+      }
+
+      // Xóa các dòng không mong muốn
+      const cleanedText = rawText
+        .replace(/Chuyển Văn Bản Thành File Word/g, '')
+        .replace(/Chuyển thành Word/g, '')
+        .replace(/→ Tới chuyendoi\.html/g, '')
+        .trim();
+
+      const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                     "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                     "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                     "<head><meta charset='utf-8'><title>Export HTML To Word</title></head><body>";
+      const footer = "</body></html>";
+      const html = header + cleanedText.replace(/\n/g, "<br>") + footer;
+
+      const blob = new Blob(['\ufeff', html], {
+        type: 'application/msword'
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename + ".doc";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
