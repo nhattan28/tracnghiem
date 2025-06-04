@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kết Quả Bài Làm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #6ee7b7, #3b82f6, #8b5cf6, #ec4899);
+      background-size: 400% 400%;
+      animation: gradientFlow 12s ease infinite;
+      color: #1f2937;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .firework {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ec4899;
+      animation: explode 1.2s ease-out forwards;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    @keyframes explode {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(5) translateY(-200px);
+      }
+    }
+
+    .scroll-buttons {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 10000;
+    }
+
+    .scroll-buttons button {
+      background: linear-gradient(to right, #8b5cf6, #ec4899);
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .scroll-buttons button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 1.5rem auto;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+    }
+
+    table {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.3);
+      font-weight: 600;
+      color: #1e40af;
+    }
+
+    td {
+      background: rgba(255, 255, 255, 0.2);
+      color: #1f2937;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        width: 90%;
+        padding: 2.5rem;
+      }
+      th, td {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        width: 80%;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .container {
+        width: 70%;
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center py-6">
+  <div class="container">
+    <h1 class="text-3xl md:text-4xl font-bold mb-6 text-center text-indigo-700">📊 Kết Quả Bài Làm</h1>
+
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full text-center">
+        <thead>
+          <tr>
+            <th>Thời gian làm</th>
+            <th>Điểm</th>
+            <th>Số câu đúng</th>
+            <th>Số câu sai</th>
+            <th>Tổng số câu</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="time"></td>
+            <td id="score"></td>
+            <td id="correct"></td>
+            <td id="wrong"></td>
+            <td id="total"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="wrongAnswersSection" class="mt-8">
+      <h2 class="text-2xl font-semibold text-red-600 mb-6 text-center">❌ Câu trả lời sai</h2>
+      <div id="wrongAnswersContainer" class="space-y-6"></div>
+    </div>
+
+    <div id="perfectMessage" class="hidden text-center text-green-600 text-2xl font-semibold mt-8">
+      🎉 Tuyệt vời! Bạn đã làm đúng tất cả câu hỏi! 🎉
+    </div>
+
+    <div id="motivationalMessage" class="hidden text-center text-indigo-700 text-xl font-medium mt-6"></div>
+
+    <div class="mt-10 text-center">
+      <div class="button-group">
+        <a href="#" onclick="restartQuiz()" class="inline-block bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-transform duration-200 hover:-translate-y-1">🔄 Làm lại</a>
+        <a href="#" onclick="goBack()" class="inline-block bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-transform duration-200 hover:-translate-y-1">⬅️ Quay lại</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-buttons">
+    <button onclick="scrollToTop()">⬆️</button>
+    <button onclick="scrollToBottom()">⬇️</button>
+  </div>
+
+  <script>
+    const score = localStorage.getItem("quizScore");
+    const correct = localStorage.getItem("quizCorrect");
+    const total = localStorage.getItem("quizTotal");
+    const time = localStorage.getItem("quizTime");
+    const wrongAnswers = JSON.parse(localStorage.getItem("quizWrongAnswers") || "[]");
+    const scale = localStorage.getItem("quizScale") || 10;
+
+    // Format the score: show one decimal place if non-zero, hide decimal if zero
+    const scoreValue = parseFloat(score);
+    const formattedScore = scoreValue % 1 === 0 ? scoreValue.toFixed(0) : scoreValue.toFixed(1);
+    document.getElementById("score").textContent = `${formattedScore}/${scale}`;
+    document.getElementById("correct").textContent = correct;
+    document.getElementById("total").textContent = total;
+    document.getElementById("time").textContent = time;
+    document.getElementById("wrong").textContent = total - correct;
+
+    const wrongContainer = document.getElementById("wrongAnswersContainer");
+    const section = document.getElementById("wrongAnswersSection");
+    const motivationalMessage = document.getElementById("motivationalMessage");
+
+    if (wrongAnswers.length === 0) {
+      section.classList.add("hidden");
+      document.getElementById("perfectMessage").classList.remove("hidden");
+      triggerFireworks();
+    } else {
+      section.classList.remove("hidden");
+      motivationalMessage.classList.remove("hidden");
+
+      const scorePercentage = (parseFloat(score) / parseFloat(scale)) * 100;
+      let message = "";
+
+      if (scorePercentage >= 90) {
+        message = "👏 Xuất sắc! Bạn gần như hoàn hảo!";
+      } else if (scorePercentage >= 70) {
+        message = "👍 Rất tốt! Hãy xem lại vài câu để cải thiện nhé!";
+      } else if (scorePercentage >= 50) {
+        message = "💪 Khá ổn! Cố gắng thêm một chút nữa!";
+      } else {
+        message = "🚀 Đừng nản! Ôn tập lại, lần sau bạn sẽ làm tốt hơn!";
+      }
+
+      motivationalMessage.textContent = message;
+
+      wrongAnswers.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "p-4 rounded-xl bg-red-50 border border-red-200 shadow-sm";
+        div.innerHTML = `
+          <p class="mb-2 text-lg font-semibold">Câu ${index + 1}: ${item.question}</p>
+          <p class="text-blue-700"><strong>Đáp án bạn chọn:</strong> ${item.selected}</p>
+          <p class="text-green-700"><strong>Đáp án đúng:</strong> ${item.correct}</p>
+        `;
+        wrongContainer.appendChild(div);
+      });
+    }
+
+    function triggerFireworks() {
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => createFirework(), i * 50);
+      }
+    }
+
+    function createFirework() {
+      const f = document.createElement("div");
+      f.className = "firework";
+      f.style.left = Math.random() * window.innerWidth + "px";
+      f.style.top = Math.random() * window.innerHeight + "px";
+      f.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
+      document.body.appendChild(f);
+      setTimeout(() => f.remove(), 1200);
+    }
+
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    function scrollToBottom() {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+
+    function restartQuiz() {
+      // Clear previous quiz results
+      localStorage.removeItem("quizScore");
+      localStorage.removeItem("quizCorrect");
+      localStorage.removeItem("quizTotal");
+      localStorage.removeItem("quizTime");
+      localStorage.removeItem("quizWrongAnswers");
+      localStorage.removeItem("quizScale");
+      // Set flag to indicate a restart with existing file
+      localStorage.setItem("restartQuiz", "true");
+      window.location.href = "index.html";
+    }
+
+    function goBack() {
+      // Clear all quiz-related data including the file
+      localStorage.removeItem("quizQuestions");
+      localStorage.removeItem("quizScore");
+      localStorage.removeItem("quizCorrect");
+      localStorage.removeItem("quizTotal");
+      localStorage.removeItem("quizTime");
+      localStorage.removeItem("quizWrongAnswers");
+      localStorage.removeItem("quizScale");
+      localStorage.removeItem("restartQuiz");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
