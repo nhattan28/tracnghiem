@@ -123,6 +123,16 @@
       justify-content: center;
     }
 
+    @media (max-width: 640px) {
+      .container {
+        width: 98%;
+        padding: 1.5rem;
+      }
+      th, td {
+        font-size: 0.9rem;
+      }
+    }
+
     @media (min-width: 640px) {
       .container {
         width: 90%;
@@ -206,7 +216,6 @@
     const wrongAnswers = JSON.parse(localStorage.getItem("quizWrongAnswers") || "[]");
     const scale = localStorage.getItem("quizScale") || 10;
 
-    // Format the score: show one decimal place if non-zero, hide decimal if zero
     const scoreValue = parseFloat(score);
     const formattedScore = scoreValue % 1 === 0 ? scoreValue.toFixed(0) : scoreValue.toFixed(1);
     document.getElementById("score").textContent = `${formattedScore}/${scale}`;
@@ -246,7 +255,7 @@
         const div = document.createElement("div");
         div.className = "p-4 rounded-xl bg-red-50 border border-red-200 shadow-sm";
         div.innerHTML = `
-          <p class="mb-2 text-lg font-semibold"> ${item.question}</p>
+          <p class="mb-2 text-lg font-semibold">${item.question}</p>
           <p class="text-blue-700"><strong>Đáp án bạn chọn:</strong> ${item.selected}</p>
           <p class="text-green-700"><strong>Đáp án đúng:</strong> ${item.correct}</p>
         `;
@@ -285,20 +294,17 @@
     }
 
     function restartQuiz() {
-      // Clear previous quiz results
       localStorage.removeItem("quizScore");
       localStorage.removeItem("quizCorrect");
       localStorage.removeItem("quizTotal");
       localStorage.removeItem("quizTime");
       localStorage.removeItem("quizWrongAnswers");
       localStorage.removeItem("quizScale");
-      // Set flag to indicate a restart with existing file
       localStorage.setItem("restartQuiz", "true");
       window.location.href = "index.html";
     }
 
     function goBack() {
-      // Clear all quiz-related data including the file
       localStorage.removeItem("quizQuestions");
       localStorage.removeItem("quizScore");
       localStorage.removeItem("quizCorrect");
